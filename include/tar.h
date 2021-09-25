@@ -1,7 +1,10 @@
 #pragma once
 
+#include <sys/stat.h>
+
 #include <filesystem>
 #include <fstream>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -42,12 +45,15 @@ class Tar {
                                           const std::filesystem::path &);
   bolo::Insidious<std::string> AppendFile(const std::filesystem::path &,
                                           const std::filesystem::path &);
+  bolo::Insidious<std::string> AppendSymlink(const std::filesystem::path &,
+                                             const std::filesystem::path &);
   bolo::Insidious<std::string> AppendDirectory(const std::filesystem::path &,
                                                const std::filesystem::path &);
   bolo::Insidious<std::string> ExtractFile(const std::filesystem::path &, int);
 
  private:
   std::fstream fs_;
+  std::map<short,std::string> map_;
 };
 
 };  // namespace bolo_tar
