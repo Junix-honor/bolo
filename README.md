@@ -1,3 +1,3 @@
-# Bolo
+# Backup
 
-Bolo is is a file archiver used for backup.
+Backup is is a file archiver used for backup.

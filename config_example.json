@@ -1,7 +1,0 @@
-{
-    "backup_dir": ".backup",
-    "backup_list": [],
-    "next_id": 0,
-    "enable_auto_update": true,
-    "cloud_mount_path": "/path/to/rclone/mount"
-}
