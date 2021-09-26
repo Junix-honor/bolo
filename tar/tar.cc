@@ -81,11 +81,8 @@ struct TarHeader {
       header->filetype[0] = '0';
     else if (type == fs::file_type::symlink)
       header->filetype[0] = '1';
-    else if (type == fs::file_type::directory)
-      header->filetype[0] = '2';
-    else
-      header->filetype[0] = '3';
-    if (linkfile != "")
+    else header->filetype[0] = '2';
+    if (!linkfile.empty())
       std::strncpy(header->linked_file, linkfile.c_str(), sizeof(TarHeader::linked_file));
     return header;
   }
@@ -95,7 +92,14 @@ struct TarHeader {
   std::string linked_file_name() const { return linked_file; }
 
   fs::file_type file_type() const {
-    return filetype[0] == '0' ? fs::file_type::regular : fs::file_type::directory;
+    if (filetype[0] == '0')
+      return fs::file_type::regular;
+    else if (filetype[0] == '1')
+      return fs::file_type::symlink;
+    else if (filetype[0] == '2')
+      return fs::file_type::directory;
+    else
+      return fs::file_type::unknown;
   }
 
   Maybe<fs::perms> perms() const {
@@ -121,7 +125,7 @@ static_assert(sizeof(TarHeader) == FileAlignment, "tar header size");
 Insidious<std::string> Tar::AppendFile(const std::filesystem::path &path,
                                        const fs::path &relative_dir) {
   struct stat sbuf;
-  stat(path.lexically_relative(path).string().c_str(), &sbuf);
+  stat(path.lexically_relative(relative_dir).string().c_str(), &sbuf);
   if (sbuf.st_nlink > 1) {
     if (map_.count(sbuf.st_ino)) {
       fs::path target_path = map_[sbuf.st_ino];
@@ -212,6 +216,7 @@ Insidious<std::string> Tar::AppendImpl(const fs::path &path, const fs::path &rel
 }
 
 Insidious<std::string> Tar::Append(const fs::path &path) try {
+  map_.clear();
   return AppendImpl(path, path.parent_path());
 } catch (const fs::filesystem_error &e) {
   return Danger("filesystem: "s + e.what());
@@ -268,7 +273,7 @@ Insidious<std::string> Tar::Extract(const fs::path &dir) {
       fs::create_directories(dir / filename);
     } else if (header.file_type() == fs::file_type::symlink) {
       fs::create_symlink(dir / header.linked_file_name(), dir / filename);
-    } else if (header.file_type() == fs::file_type::regular && header.linked_file_name()!="") {
+    } else if (header.file_type() == fs::file_type::regular && header.linked_file_name() != "") {
       fs::create_hard_link(dir / header.linked_file_name(), dir / filename);
     } else {
       auto ins = ExtractFile(dir / filename, size.value());

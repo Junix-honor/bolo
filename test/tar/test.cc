@@ -75,12 +75,17 @@ bool CreateTestFile() {
       if (!WriteString(f, contents[f])) return false;
     }
   }
+  fs::create_symlink("./a/t.txt", "foo/symlink");
+  fs::create_hard_link("foo/a/s.txt", "foo/hard");
+  filenames.push_back("foo/symlink");
+  filenames.push_back("foo/hard");
   return true;
 }
 
 bool DeleteTestFile() {
   for (auto it = filenames.rbegin(); it != filenames.rend(); it++) fs::remove(*it);
-
+  fs::remove_all("symlink");
+  fs::remove_all("hard");
   fs::current_path("..");
   fs::remove_all("tar_test_dir");
   fs::remove_all("untar_test_dir");

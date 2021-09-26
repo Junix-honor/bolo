@@ -4,3 +4,5 @@ build/
 .cache/
 compile_commands.json
 .vim
+.idea/
+cmake-build-debug/
