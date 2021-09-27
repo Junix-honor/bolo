@@ -4,16 +4,16 @@
 
 PassWord::PassWord(QWidget *parent) : QMessageBox(parent) {
   this->setIcon(QMessageBox::NoIcon);
-  this->setWindowTitle("密码");
+  this->setWindowTitle("Password");
   this->setStyleSheet("background-color:white");
 
   password.setParent(this);
   password.setReadOnly(false);
   password.setEchoMode(QLineEdit::Password);
 
-  option_ok = this->addButton("确定", QMessageBox::AcceptRole);
-  option_cancel = this->addButton("取消", QMessageBox::AcceptRole);
-  plabel = new QLabel("输入密码");
+  option_ok = this->addButton("Confirm", QMessageBox::AcceptRole);
+  option_cancel = this->addButton("Cancel", QMessageBox::AcceptRole);
+  plabel = new QLabel("Please input the password");
 
   dynamic_cast<QGridLayout *>(this->layout())->addWidget(plabel, 0, 1, 1, 4);
   dynamic_cast<QGridLayout *>(this->layout())->addWidget(&password, 2, 1, 1, 4);

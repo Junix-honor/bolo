@@ -41,15 +41,17 @@ MainWindow::MainWindow(std::unique_ptr<bolo::Bolo> &&bolo, QWidget *parent)
   list_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
   // 新建备份文件的按钮
-  QPixmap add_image(":/images/Add.jpg");
+  // QPixmap add_image(":/images/Add.jpg");
   new_file.setParent(this);
-  new_file.setIcon(add_image);
-  new_file.setIconSize(QSize(100, 100));
+  new_file.setFont(QFont("Arial", 20, QFont::Black));
+  new_file.setText("ADD");
+  // new_file.setIcon(add_image);
+  // new_file.setIconSize(QSize(100, 100));
   new_file.setMinimumSize(100, 100);
 
   // 设置标题
   title.setFont(QFont("Times", 25, QFont::Black));
-  title.setText("Bolo");
+  title.setText("BackUp");
   title.setMinimumSize(100, 100);
 
   // 设置进度条
@@ -58,9 +60,10 @@ MainWindow::MainWindow(std::unique_ptr<bolo::Bolo> &&bolo, QWidget *parent)
   progressbar.setValue(50000);
 
   // 界面布局
+  // sub_layout->addStretch();
   sub_layout->addWidget(&new_file);
-  sub_layout->addStretch();
-  sub_layout->addWidget(&title);
+  // sub_layout->addStretch();
+  // sub_layout->addWidget(&title);
   sub_layout->setSizeConstraint(QLayout::SetFixedSize);
 
   main_layout->addLayout(sub_layout);
@@ -147,23 +150,26 @@ void MainWindow::Show_FileWindow() {
 
 void MainWindow::Add_NewFile(QString file_path) {
   // 可选项选择
-  QMessageBox set_box(QMessageBox::NoIcon, "选项", "", 0, NULL, Qt::Sheet);
+  QMessageBox set_box(QMessageBox::NoIcon, "OPTIONS", "", 0, NULL, Qt::Sheet);
   set_box.setStyleSheet("background-color:white");
 
-  QCheckBox option_compress("压缩", &set_box);
-  QCheckBox option_encrypt("加密", &set_box);
-  QCheckBox option_cloud("云备份", &set_box);
+  QCheckBox option_compress("Compress", &set_box);
+  QCheckBox option_encrypt("Encrypt", &set_box);
+  QCheckBox option_cloud("Cloud-Backup", &set_box);
 
-  QPushButton *option_ok = set_box.addButton("确定", QMessageBox::AcceptRole);
-  QPushButton *option_cancel = set_box.addButton("取消", QMessageBox::AcceptRole);
-  QLabel *pLabel = new QLabel("备份可选项");
+  set_box.addButton(QMessageBox::No);
+  set_box.button(QMessageBox::No)->setHidden(true);
 
-  dynamic_cast<QGridLayout *>(set_box.layout())->addWidget(pLabel, 0, 1, 1, 4);
-  dynamic_cast<QGridLayout *>(set_box.layout())->addWidget(&option_compress, 2, 1, 1, 4);
-  dynamic_cast<QGridLayout *>(set_box.layout())->addWidget(&option_encrypt, 3, 1, 1, 4);
-  dynamic_cast<QGridLayout *>(set_box.layout())->addWidget(&option_cloud, 4, 1, 1, 4);
-  dynamic_cast<QGridLayout *>(set_box.layout())->addWidget(option_ok, 5, 1);
-  dynamic_cast<QGridLayout *>(set_box.layout())->addWidget(option_cancel, 5, 2);
+  QPushButton *option_ok = set_box.addButton("Confirm", QMessageBox::AcceptRole);
+  QPushButton *option_cancel = set_box.addButton("Cancel", QMessageBox::AcceptRole);
+  // QLabel *pLabel = new QLabel("备份可选项");
+
+  // dynamic_cast<QGridLayout *>(set_box.layout())->addWidget(pLabel, 0, 1, 1, 4);
+  dynamic_cast<QGridLayout *>(set_box.layout())->addWidget(&option_compress, 0, 1, 1, 4);
+  dynamic_cast<QGridLayout *>(set_box.layout())->addWidget(&option_encrypt, 1, 1, 1, 4);
+  dynamic_cast<QGridLayout *>(set_box.layout())->addWidget(&option_cloud, 2, 1, 1, 4);
+  dynamic_cast<QGridLayout *>(set_box.layout())->addWidget(option_ok, 4, 1);
+  dynamic_cast<QGridLayout *>(set_box.layout())->addWidget(option_cancel, 4, 2);
 
   set_box.exec();
 
@@ -186,7 +192,7 @@ void MainWindow::Add_NewFile(QString file_path) {
     }
     if (password_window.clickedButton() == password_window.option_ok &&
         password_window.password.text().size() == 0) {
-      QMessageBox::critical(NULL, "错误", "密码不能为空", QMessageBox::Yes, QMessageBox::Yes);
+      QMessageBox::critical(NULL, "Error", "Password cannot be empty", QMessageBox::Yes, QMessageBox::Yes);
       return;
     }
   }
@@ -198,7 +204,7 @@ void MainWindow::Add_NewFile(QString file_path) {
                             password_window.password.text().toStdString());
 
   if (!res) {
-    QMessageBox::critical(NULL, "错误", QString::fromStdString(res.error()), QMessageBox::Yes,
+    QMessageBox::critical(NULL, "Error", QString::fromStdString(res.error()), QMessageBox::Yes,
                           QMessageBox::Yes);
     return;
   }
@@ -224,30 +230,30 @@ void MainWindow::Show_FileDetail(const QModelIndex &index) {
   ItemData data = variant.value<ItemData>();
   auto file = mybolo->GetBackupFile(data.id);
   if (!file) {
-    QMessageBox::critical(NULL, "错误", "无法读取文件信息", QMessageBox::Yes, QMessageBox::Yes);
+    QMessageBox::critical(NULL, "Error", "Cannot read file", QMessageBox::Yes, QMessageBox::Yes);
     return;
   }
   auto open_backupfile = file.value();
 
   // set the detail text
   QString detail = "";
-  detail = detail + "备份文件：" + QString::fromStdString(open_backupfile.filename) + "\n";
-  detail = detail + "初始目录：" + QString::fromStdString(open_backupfile.path) + "\n";
-  detail = detail + "备份目录：" + QString::fromStdString(open_backupfile.backup_path) + "\n";
-  detail = detail + "备份时间：" +
+  detail = detail + "BackUp File: \t\t" + QString::fromStdString(open_backupfile.filename) + "\n";
+  detail = detail + "Original Dir: \t\t" + QString::fromStdString(open_backupfile.path) + "\n";
+  detail = detail + "BackUp Dir: \t\t" + QString::fromStdString(open_backupfile.backup_path) + "\n";
+  detail = detail + "BackUp Time: \t" +
            QString::fromStdString(bolo::TimestampToString(open_backupfile.timestamp)) + "\n";
-  detail = detail + "是否压缩：" + (open_backupfile.is_compressed ? "是" : "否") + "\n";
-  detail = detail + "是否加密：" + (open_backupfile.is_encrypted ? "是" : "否") + "\n";
-  detail = detail + "是否云备份：" + (open_backupfile.is_in_cloud ? "是" : "否") + "\n";
+  detail = detail + "Compressed? \t" + (open_backupfile.is_compressed ? "Yes" : "No") + "\n";
+  detail = detail + "Encrypted? \t\t" + (open_backupfile.is_encrypted ? "Yes" : "No") + "\n";
+  detail = detail + "InCloud? \t\t" + (open_backupfile.is_in_cloud ? "Yes" : "No") + "\n";
 
   // set the detail box
   QMessageBox file_detail(QMessageBox::NoIcon, "File Detail", detail, 0, NULL);
 
   // set the button
-  QPushButton *close_button = file_detail.addButton(tr("关闭"), QMessageBox::AcceptRole);
-  QPushButton *delete_button = file_detail.addButton(tr("删除备份"), QMessageBox::AcceptRole);
-  QPushButton *update_button = file_detail.addButton(tr("更新备份"), QMessageBox::AcceptRole);
-  QPushButton *restore_button = file_detail.addButton(tr("恢复备份"), QMessageBox::AcceptRole);
+  QPushButton *delete_button = file_detail.addButton(tr("Delete"), QMessageBox::AcceptRole);
+  QPushButton *update_button = file_detail.addButton(tr("Update"), QMessageBox::AcceptRole);
+  QPushButton *restore_button = file_detail.addButton(tr("Restore"), QMessageBox::AcceptRole);
+  QPushButton *close_button = file_detail.addButton(tr("Close"), QMessageBox::AcceptRole);
 
   // 使右上叉号有效
   file_detail.addButton(QMessageBox::No);
@@ -264,7 +270,7 @@ void MainWindow::Show_FileDetail(const QModelIndex &index) {
       }
     }
     // 设置并显示文件列表
-    file_window.setWindowTitle("本地文件");
+    file_window.setWindowTitle("Local File");
     file_window.setAcceptMode(QFileDialog::AcceptOpen);
     file_window.setViewMode(QFileDialog::List);
     file_window.setFileMode(QFileDialog::Directory);
@@ -282,7 +288,7 @@ void MainWindow::Show_FileDetail(const QModelIndex &index) {
 
       // 输出错误信息
       if (res)
-        QMessageBox::critical(NULL, "错误", QString::fromStdString(res.error()), QMessageBox::Yes,
+        QMessageBox::critical(NULL, "Error", QString::fromStdString(res.error()), QMessageBox::Yes,
                               QMessageBox::Yes);
     }
   } else if (file_detail.clickedButton() == update_button) {
@@ -301,7 +307,7 @@ void MainWindow::Show_FileDetail(const QModelIndex &index) {
 
     // 输出错误信息
     if (res)
-      QMessageBox::critical(NULL, "错误", QString::fromStdString(res.error()), QMessageBox::Yes,
+      QMessageBox::critical(NULL, "Error", QString::fromStdString(res.error()), QMessageBox::Yes,
                             QMessageBox::Yes);
   } else if (file_detail.clickedButton() == delete_button) {
     // 删除备份
@@ -317,7 +323,7 @@ void MainWindow::Show_FileDetail(const QModelIndex &index) {
       auto res = mybolo->Remove(open_backupfile.id);
       if (res)
         // 输出错误信息
-        QMessageBox::critical(NULL, "错误", QString::fromStdString(res.error()), QMessageBox::Yes,
+        QMessageBox::critical(NULL, "Error", QString::fromStdString(res.error()), QMessageBox::Yes,
                               QMessageBox::Yes);
       else
         // 结构中删除对应数据

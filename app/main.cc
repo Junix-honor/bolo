@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
   if (res) {
     // 生成成功
     MainWindow w(std::move(res.value()));
-    w.setWindowTitle("Bolo");
+    w.setWindowTitle("BackUp");
     w.setFixedSize(600, 640);
     w.show();
 
