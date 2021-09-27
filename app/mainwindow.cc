@@ -237,9 +237,9 @@ void MainWindow::Show_FileDetail(const QModelIndex &index) {
 
   // set the detail text
   QString detail = "";
-  detail = detail + "BackUp File: \t\t" + QString::fromStdString(open_backupfile.filename) + "\n";
-  detail = detail + "Original Dir: \t\t" + QString::fromStdString(open_backupfile.path) + "\n";
-  detail = detail + "BackUp Dir: \t\t" + QString::fromStdString(open_backupfile.backup_path) + "\n";
+  detail = detail + "BackUp File: \t" + QString::fromStdString(open_backupfile.filename) + "\n";
+  detail = detail + "Original Dir: \t" + QString::fromStdString(open_backupfile.path) + "\n";
+  detail = detail + "BackUp Dir: \t" + QString::fromStdString(open_backupfile.backup_path) + "\n";
   detail = detail + "BackUp Time: \t" +
            QString::fromStdString(bolo::TimestampToString(open_backupfile.timestamp)) + "\n";
   detail = detail + "Compressed? \t" + (open_backupfile.is_compressed ? "Yes" : "No") + "\n";
