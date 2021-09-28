@@ -16,6 +16,7 @@ endif()
 # set include_directories
 include_directories("include")
 
+add_subdirectory(copy)
 add_subdirectory(compress)
 add_subdirectory(tar)
 add_subdirectory(crypto)

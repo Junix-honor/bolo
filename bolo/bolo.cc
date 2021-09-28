@@ -7,6 +7,7 @@
 #include <unordered_set>
 
 #include "compress.h"
+#include "copy.h"
 #include "crypto.h"
 #include "libfswatch/c++/libfswatch_exception.hpp"
 #include "libfswatch/c++/monitor.hpp"
@@ -223,8 +224,8 @@ Insidious<std::string> Bolo::BackupImpl(BackupFile &f, const std::string &key) {
   // cannot use rename: Invalid cross-device link
   std::thread([f, temp]() {
     try {
-      fs::copy(temp, f.backup_path,
-               fs::copy_options::update_existing | fs::copy_options::recursive);
+      bolo_copy::Copy copy;
+      auto res = copy.FullCopy(temp, f.backup_path);
     } catch (const fs::filesystem_error &e) {
       Log(LogLevel::Error, "copy error: "s + e.what());
     }
@@ -331,7 +332,8 @@ Insidious<std::string> Bolo::Restore(BackupFileId id, const fs::path &restore_di
       return Danger("tar error: "s + tar.error());
     }
   } else {
-    fs::copy(temp, restore_path, fs::copy_options::update_existing | fs::copy_options::recursive);
+    bolo_copy::Copy copy;
+    auto res = copy.FullCopy(temp, restore_path);
   }
   return Safe;
 } catch (const fs::filesystem_error &e) {
