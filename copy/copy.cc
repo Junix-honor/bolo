@@ -20,14 +20,14 @@ Insidious<std::string> Copy::RecursiveCopy(const fs::path& src, const fs::path& 
     std::cout << "error" << code.value() << " " << code.message();
     return Safe;
   } else if (fs::is_regular_file(src))
-    return CopyRegularFile(src, target);
+    return CopyFile(src, target);
   else if (fs::is_directory(src))
     return CopyDirectory(src, target);
   else
     return Danger("Unsupported file type: "s +
                   std::to_string(static_cast<unsigned>(fs::status(src).type())));
 }
-Insidious<std::string> Copy::CopyRegularFile(const fs::path& src, const fs::path& target) {
+Insidious<std::string> Copy::CopyFile(const fs::path& src, const fs::path& target) {
   struct stat sbuf;
   int res = stat(src.string().c_str(), &sbuf);
   if (sbuf.st_nlink > 1) {

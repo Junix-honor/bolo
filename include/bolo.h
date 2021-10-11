@@ -43,7 +43,7 @@ class Bolo {
     return Nothing;
   }
 
-  void SetMonitor(std::shared_ptr<fsw::monitor> monitor) { fs_monitor_ = monitor; }
+//  void SetMonitor(std::shared_ptr<fsw::monitor> monitor) { fs_monitor_ = monitor; }
 
  private:
   Bolo(const fs::path &config_path, json &&config, BackupList &&m, BackupFileId next_id,
